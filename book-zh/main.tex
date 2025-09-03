@@ -8,6 +8,13 @@
 \usepackage{geometry}
 \usepackage{fancyhdr}
 \usepackage{setspace}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{tikz}
+
+\usetikzlibrary{arrows, positioning, shapes, calc}
+\newcommand{\diag}{\operatorname{diag}}
 
 % 页面设置
 \geometry{a4paper, margin=2.5cm}
@@ -19,6 +26,7 @@
 \fancyhead[L]{深度学习与计算物理（翻译）}
 \fancyhead[R]{\leftmark}
 \fancyfoot[C]{\thepage}
+\setlength{\headheight}{15pt}
 
 % 超链接美化
 \hypersetup{
@@ -28,7 +36,8 @@
     urlcolor=blue
 }
 
-% ---------- 自定义环境 ----------
+% ---------- 自定义命令 ----------
+\newcommand{\term}[2]{\textbf{#1} (#2)} % 术语对照
 \newenvironment{mycomment}{
     \begin{quote}
     \textbf{我的理解与注释：}\par
@@ -43,6 +52,32 @@
 \begin{document}
 \maketitle
 \tableofcontents
+\newpage
+
+% ---------- 术语对照表 ----------
+\chapter*{术语对照表}
+\begin{longtable}{p{0.4\textwidth}p{0.5\textwidth}}
+\hline
+中文术语 & 英文术语 \\
+\hline
+人工智能 & Artificial Intelligence (AI) \\
+机器学习 & Machine Learning (ML) \\
+深度学习 & Deep Learning (DL) \\
+计算物理 & Computational Physics \\
+偏微分方程 & Partial Differential Equation (PDE) \\
+常微分方程 & Ordinary Differential Equation (ODE) \\
+训练集 & Training Set \\
+验证集 & Validation Set \\
+测试集 & Test Set \\
+过拟合 & Overfitting \\
+正则化 & Regularization \\
+梯度下降 & Gradient Descent (GD) \\
+反向传播 & Backpropagation \\
+卷积神经网络 & Convolutional Neural Network (CNN) \\
+残差网络 & Residual Neural Network (ResNet) \\
+生成对抗网络 & Generative Adversarial Network (GAN) \\
+\hline
+\end{longtable}
 \newpage
 
 % ---------- 引入章节 ----------
