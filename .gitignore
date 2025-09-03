@@ -1,1 +1,8 @@
-Deep Learning and Computational Physics_1_160_translate_20250609154451.pdf
+# related to latex
+*.aux
+*.bbl
+*.blg
+*.brf
+*.idx
+*.ilg
+*.ind       
