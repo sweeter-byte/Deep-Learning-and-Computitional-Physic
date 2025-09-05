@@ -6,3 +6,7 @@
 *.toc 
 *.pdf
 *.blg
+
+# related to python
+__pycache__/
+.ipynb_checkpoints
