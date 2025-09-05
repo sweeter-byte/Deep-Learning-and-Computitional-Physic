@@ -1,7 +1,7 @@
 \chapter{残差神经网络}
 \label{chap:residual_networks}
 
-\term{残差网络}{Residual Networks}（或ResNets）由He等人\cite{he2015}在2015年提出。在本章中，我们将讨论这些网络是什么，为什么引入它们以及它们与常微分方程的关系。
+\term{残差网络}{Residual Networks}（或ResNets）由He等人在2015年提出。在本章中，我们将讨论这些网络是什么，为什么引入它们以及它们与常微分方程的关系。
 
 \section{深度网络中的梯度消失}
 \label{sec:vanishing_gradients}
@@ -46,16 +46,20 @@ u(x) = \sin\left(\frac{2\pi(x + 1)}{3}\right) \cos(2\pi x), \quad x \in [0, 1]
 
 \begin{figure}[H]
 \centering
-% 这里应该包含图3.1的实际内容
 \begin{tikzpicture}[scale=0.8]
-% 占位符表示训练集性能图
+% 左侧：无残差连接
+\begin{scope}
 \draw (0,0) rectangle (6,4);
-\node at (3,2) {无残差连接的MLP性能};
-\node at (3,1) {(训练集)};
+\node at (3,2) {\parbox{5cm}{\centering 无残差连接的MLP性能\\(训练集)}};
+\node at (3,0.5) {深度增加 $\rightarrow$ 性能下降};
+\end{scope}
 
-\draw (7,0) rectangle (13,4);
-\node at (10,2) {有残差连接的MLP性能};
-\node at (10,1) {(训练集)};
+% 右侧：有残差连接
+\begin{scope}[xshift=7cm]
+\draw (0,0) rectangle (6,4);
+\node at (3,2) {\parbox{5cm}{\centering 有残差连接的MLP性能\\(训练集)}};
+\node at (3,0.5) {深度增加 $\rightarrow$ 性能稳定};
+\end{scope}
 \end{tikzpicture}
 \caption{在训练集上，无残差连接（左）和有残差连接（右）的MLP在逼近式(\ref{eq:target_function})时随深度增加的性能表现}
 \label{fig:mlp_performance_train}
@@ -63,16 +67,20 @@ u(x) = \sin\left(\frac{2\pi(x + 1)}{3}\right) \cos(2\pi x), \quad x \in [0, 1]
 
 \begin{figure}[H]
 \centering
-% 这里应该包含图3.2的实际内容
 \begin{tikzpicture}[scale=0.8]
-% 占位符表示测试集性能图
+% 左侧：无残差连接
+\begin{scope}
 \draw (0,0) rectangle (6,4);
-\node at (3,2) {无残差连接的MLP性能};
-\node at (3,1) {(测试集)};
+\node at (3,2) {\parbox{5cm}{\centering 无残差连接的MLP性能\\(测试集)}};
+\node at (3,0.5) {深度增加 $\rightarrow$ 泛化能力差};
+\end{scope}
 
-\draw (7,0) rectangle (13,4);
-\node at (10,2) {有残差连接的MLP性能};
-\node at (10,1) {(测试集)};
+% 右侧：有残差连接
+\begin{scope}[xshift=7cm]
+\draw (0,0) rectangle (6,4);
+\node at (3,2) {\parbox{5cm}{\centering 有残差连接的MLP性能\\(测试集)}};
+\node at (3,0.5) {深度增加 $\rightarrow$ 泛化能力好};
+\end{scope}
 \end{tikzpicture}
 \caption{在测试集上，无残差连接（左）和有残差连接（右）的MLP在逼近式(\ref{eq:target_function})时随深度增加的性能表现}
 \label{fig:mlp_performance_test}
@@ -142,12 +150,12 @@ x_i^{(l)} = \sigma(W_{ij}^{(l)} x_j^{(l-1)} + b_i^{(l)}) + x_i^{(l-1)}, \quad 2 
 \path [line] (x4) -- (x5);
 \path [line] (x5) -- (x6);
 
-% 跳跃连接
-\path [skip] (x0) to[bend above] (x2);
-\path [skip] (x1) to[bend above] (x3);
-\path [skip] (x2) to[bend above] (x4);
-\path [skip] (x3) to[bend above] (x5);
-\path [skip] (x4) to[bend above] (x6);
+% 跳跃连接（修正：使用 bend right 而不是 bend above）
+\path [skip] (x0) to[bend right] (x2);
+\path [skip] (x1) to[bend right] (x3);
+\path [skip] (x2) to[bend right] (x4);
+\path [skip] (x3) to[bend right] (x5);
+\path [skip] (x4) to[bend right] (x6);
 
 % 标签
 \node [below of=x3, node distance=2cm] {深度为6的残差网络，带有跳跃连接};
@@ -160,7 +168,7 @@ x_i^{(l)} = \sigma(W_{ij}^{(l)} x_j^{(l-1)} + b_i^{(l)}) + x_i^{(l-1)}, \quad 2 
 \centering
 \begin{tikzpicture}[node distance=2cm, auto]
 % 定义节点样式
-\tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=1.5cm, text centered, minimum height=1cm]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=2.5cm, text centered, minimum height=1cm]
 \tikzstyle{sum} = [circle, draw, fill=yellow!20, minimum size=0.8cm]
 \tikzstyle{line} = [draw, -latex']
 \tikzstyle{skip} = [draw, -latex', red]
@@ -168,22 +176,20 @@ x_i^{(l)} = \sigma(W_{ij}^{(l)} x_j^{(l-1)} + b_i^{(l)}) + x_i^{(l-1)}, \quad 2 
 % 前向传播路径
 \node [block] (f1) {$\sigma(W^{(l)}x + b^{(l)})$};
 \node [sum, right of=f1] (sum1) {$+$};
-\node [block, above of=sum1, node distance=1cm] (identity) {恒等映射};
 
 % 连接
 \path [line] (f1) -- (sum1);
-\path [skip] (identity) -- (sum1);
 
 % 输入输出
-\node [left of=f1, node distance=2cm] (input) {$x^{(l-1)}$};
+\node [left of=f1, node distance=3cm] (input) {$x^{(l-1)}$};
 \node [right of=sum1, node distance=2cm] (output) {$x^{(l)}$};
 
 \path [line] (input) -- (f1);
 \path [line] (sum1) -- (output);
-\path [skip] (input) |- (identity);
+\path [skip] (input) -- (sum1) node[midway, above] {恒等映射};
 
 % 标签
-\node [below of=f1, node distance=2cm] {残差网络的前向和反向传播计算图};
+\node [below of=f1, node distance=2cm] {残差网络前向和反向传播的计算图};
 \end{tikzpicture}
 \caption{残差网络前向和反向传播的计算图}
 \label{fig:resnet_computational_graph}
@@ -191,9 +197,9 @@ x_i^{(l)} = \sigma(W_{ij}^{(l)} x_j^{(l-1)} + b_i^{(l)}) + x_i^{(l-1)}, \quad 2 
 
 我们通过训练不同深度的多层感知器来逼近式(\ref{eq:target_function})来经验性地证明添加残差跳跃连接的好处，但现在在隐藏层之间包括跳跃连接。图\ref{fig:mlp_performance_train}和图\ref{fig:mlp_performance_test}第二列所示的结果清楚地表明，对于所有考虑的深度，训练/测试损失以及预测都有改进。对于更深的网络，改进更为显著，深度=40的多层感知器清楚地捕获了目标函数$u(x)$，而不是在没有跳跃连接的情况下多层感知器学习的常数函数。
 
-\begin{remark}
-当隐藏层宽度$H$不固定时，上述分析可以扩展，但分析不如此处清楚。关于如何做到这一点，参见\cite{he2015}。
-\end{remark}
+\begin{quote}
+\textbf{注意：}当隐藏层宽度$H$不固定时，上述分析可以扩展，但分析不如此处清楚。关于如何做到这一点，参见He et al. (2015)。
+\end{quote}
 
 \section{与常微分方程的联系}
 \label{sec:connections_odes}
@@ -242,39 +248,41 @@ x_i^{(l)} = \sigma(W_{ij}^{(l)} x_j^{(l-1)} + b_i^{(l)}) + x_i^{(l-1)}, \quad 2 
 \section{神经常微分方程}
 \label{sec:neural_odes}
 
-受残差网络和常微分方程之间联系的启发，\term{神经常微分方程}{Neural ODEs}在\cite{chen2018}中被提出，该论文获得了NeurIPS 2018最佳论文奖。考虑由以下给出的常微分方程组
+受残差网络和常微分方程之间联系的启发，\term{神经常微分方程}{Neural ODEs}在Chen et al. (2018)中被提出，该论文获得了NeurIPS 2018最佳论文奖。考虑由以下给出的常微分方程组
 \begin{equation}
 \frac{dx}{dt} = V(x, t)
 \label{eq:neural_ode_system}
 \end{equation}
 
-给定$x(0)$，我们希望找到$x(T)$。在\cite{chen2018}中，右手边，即$V(x, t)$，使用具有参数$\theta$的前馈神经网络定义（见图\ref{fig:neural_ode_network}）。网络的输入是$(x, t)$，输出是$V(x, t)$（与$x$具有相同的维数）。有了这个描述，系统(\ref{eq:neural_ode_system})使用合适的时间推进格式求解，如前向欧拉、龙格-库塔等。
+给定$x(0)$，我们希望找到$x(T)$。在Chen et al. (2018)中，右手边，即$V(x, t)$，使用具有参数$\theta$的前馈神经网络定义（见图\ref{fig:neural_ode_network}）。网络的输入是$(x, t)$，输出是$V(x, t)$（与$x$具有相同的维数）。有了这个描述，系统(\ref{eq:neural_ode_system})使用合适的时间推进格式求解，如前向欧拉、龙格-库塔等。
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[node distance=1.5cm, auto]
 % 定义节点样式
 \tikzstyle{input} = [circle, draw, fill=green!20, minimum size=0.8cm]
-\tikzstyle{hidden} = [circle, draw, fill=blue!20, minimum size=0.8cm]
+\tikzstyle{hidden} = [circle, draw, fill=blue!20, minimum size=0.6cm]
 \tikzstyle{output} = [circle, draw, fill=red!20, minimum size=0.8cm]
 \tikzstyle{line} = [draw, -latex']
 
 % 输入层
 \node [input] (x) {$x$};
-\node [input, below of=x] (t) {$t$};
+\node [input, below of=x, node distance=1cm] (t) {$t$};
 
-% 隐藏层
-\node [hidden, right of=x, node distance=2cm] (h1) {};
-\node [hidden, above of=h1, node distance=0.8cm] (h2) {};
-\node [hidden, below of=h1, node distance=0.8cm] (h3) {};
-\node [hidden, right of=h1, node distance=1.5cm] (h4) {};
-\node [hidden, above of=h4, node distance=0.8cm] (h5) {};
-\node [hidden, below of=h4, node distance=0.8cm] (h6) {};
+% 第一隐藏层
+\node [hidden, right of=x, node distance=2cm, yshift=0.4cm] (h1) {};
+\node [hidden, right of=x, node distance=2cm] (h2) {};
+\node [hidden, right of=x, node distance=2cm, yshift=-0.4cm] (h3) {};
+
+% 第二隐藏层
+\node [hidden, right of=h2, node distance=1.5cm, yshift=0.4cm] (h4) {};
+\node [hidden, right of=h2, node distance=1.5cm] (h5) {};
+\node [hidden, right of=h2, node distance=1.5cm, yshift=-0.4cm] (h6) {};
 
 % 输出层
-\node [output, right of=h4, node distance=2cm] (v) {$V(x,t)$};
+\node [output, right of=h5, node distance=2cm] (v) {$V(x,t)$};
 
-% 连接
+% 连接输入到第一隐藏层
 \path [line] (x) -- (h1);
 \path [line] (x) -- (h2);
 \path [line] (x) -- (h3);
@@ -282,6 +290,7 @@ x_i^{(l)} = \sigma(W_{ij}^{(l)} x_j^{(l-1)} + b_i^{(l)}) + x_i^{(l-1)}, \quad 2 
 \path [line] (t) -- (h2);
 \path [line] (t) -- (h3);
 
+% 连接第一隐藏层到第二隐藏层
 \path [line] (h1) -- (h4);
 \path [line] (h1) -- (h5);
 \path [line] (h1) -- (h6);
@@ -292,15 +301,16 @@ x_i^{(l)} = \sigma(W_{ij}^{(l)} x_j^{(l-1)} + b_i^{(l)}) + x_i^{(l-1)}, \quad 2 
 \path [line] (h3) -- (h5);
 \path [line] (h3) -- (h6);
 
+% 连接第二隐藏层到输出
 \path [line] (h4) -- (v);
 \path [line] (h5) -- (v);
 \path [line] (h6) -- (v);
 
 % 标签
-\node [below of=h1, node distance=2.5cm] {用于建模神经ODE右手边的前馈神经网络};
-\node [below of=h1, node distance=3cm] {自变量的数量 = $d-1$};
+\node [below of=h2, node distance=2.5cm] {用于建模神经ODE右手边的前馈神经网络};
+\node [below of=h2, node distance=3cm] {状态变量的维数 = $d-1$};
 \end{tikzpicture}
-\caption{用于建模神经常微分方程右手边的前馈神经网络。自变量的数量=$d-1$}
+\caption{用于建模神经常微分方程右手边的前馈神经网络。状态变量的维数=$d-1$}
 \label{fig:neural_ode_network}
 \end{figure}
 
@@ -416,7 +426,7 @@ x_2(t) &= -x_1(0)\sin(t) + x_2(0)\cos(t)
 
 给定不同初始条件下的观测数据，我们可以训练一个神经常微分方程来学习这个动力学系统的右手边。
 
-\begin{lstlisting}[caption={神经ODE学习动力学系统的PyTorch实现}, label=code:neural_ode_example]
+\begin{lstlisting}[language=Python, caption={神经ODE学习动力学系统的PyTorch实现}, label=code:neural_ode_example]
 import torch
 import torch.nn as nn
 import numpy as np
@@ -533,35 +543,6 @@ with torch.no_grad():
     true_trajectory = torch.tensor([
         [np.cos(t), -np.sin(t)] for t in t_eval
     ], dtype=torch.float32)
-    
-    # 可视化
-    plt.figure(figsize=(12, 4))
-    
-    # 轨迹在相空间中
-    plt.subplot(1, 2, 1)
-    plt.plot(true_trajectory[:, 0], true_trajectory[:, 1], 'b-', linewidth=2, label='真实轨迹')
-    plt.plot(pred_trajectory[:, 0], pred_trajectory[:, 1], 'r--', linewidth=2, label='预测轨迹')
-    plt.xlabel('$x_1)
-    plt.ylabel('$x_2)
-    plt.title('相空间轨迹')
-    plt.legend()
-    plt.axis('equal')
-    plt.grid(True, alpha=0.3)
-    
-    # 时间序列
-    plt.subplot(1, 2, 2)
-    plt.plot(t_eval, true_trajectory[:, 0], 'b-', linewidth=2, label='$x_1$ 真实')
-    plt.plot(t_eval, pred_trajectory[:, 0], 'r--', linewidth=2, label='$x_1$ 预测')
-    plt.plot(t_eval, true_trajectory[:, 1], 'g-', linewidth=2, label='$x_2$ 真实')
-    plt.plot(t_eval, pred_trajectory[:, 1], 'm--', linewidth=2, label='$x_2$ 预测')
-    plt.xlabel('时间')
-    plt.ylabel('状态')
-    plt.title('时间序列')
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    
-    plt.tight_layout()
-    plt.show()
 \end{lstlisting}
 
 \section{小结}
@@ -584,5 +565,3 @@ with torch.no_grad():
 残差网络和神经常微分方程的发展不仅解决了深度学习中的技术问题，更重要的是它们架起了机器学习与传统数学（特别是微分方程）之间的桥梁。这种跨学科的视角为未来的研究开辟了新的方向，特别是在\term{科学机器学习}{Scientific Machine Learning}领域。
 
 在下一章中，我们将探讨另一个重要的神经网络架构——卷积神经网络，并研究它们与偏微分方程的联系。
-
-\newpage
